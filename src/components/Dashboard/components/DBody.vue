@@ -7,31 +7,18 @@
                 </div>
                 <span>Create new</span>
             </div>
-            <div class="d-body__filter">
+            <div 
+                :class="[{ 'active': currentFilter === filter.value}, 'd-body__filter']"
+                v-for="filter in filtersList"
+                :key="filter.value"
+                @click="setCurrentFilter(filter.value)"
+            >
                 <div class="d-body__filter-icon">
-                    <icon-chart-donut/>
+                    <component :is="filter.icon"/>
                 </div>
                 <div class="d-body__filter-info">
-                    <div class="d-body__filter-title">Even rows of data</div>
-                    <div class="d-body__filter-desc">Display rows 2,4,6 etc</div>
-                </div>
-            </div>
-            <div class="d-body__filter">
-                <div class="d-body__filter-icon">
-                    <icon-check-outline/>
-                </div>
-                <div class="d-body__filter-info">
-                    <div class="d-body__filter-title">Odd rows of data</div>
-                    <div class="d-body__filter-desc">Display rows 1,3,5 etc</div>
-                </div>
-            </div>
-            <div class="d-body__filter active">
-                <div class="d-body__filter-icon">
-                    <icon-print/>
-                </div>
-                <div class="d-body__filter-info">
-                    <div class="d-body__filter-title">All data</div>
-                    <div class="d-body__filter-desc">Display all data</div>
+                    <div class="d-body__filter-title">{{ filter.title }}</div>
+                    <div class="d-body__filter-desc">{{ filter.desc }}</div>
                 </div>
             </div>
         </div>
@@ -61,10 +48,10 @@
                 <div class="d-body__table-list">
                     <div 
                         class="d-body__table-item"
-                        v-for="item in list"
-                        :key="item.name"
+                        v-for="item in listByFilterId"
+                        :key="item.id"
                     >
-                        <div class="d-body__table-name">{{ item.name }}</div>
+                        <div class="d-body__table-name">{{ `Data${item.id}` }}</div>
                         <div class="d-body__table-summary">{{ item.summary1 }}</div>
                         <div class="d-body__table-summary">{{ item.summary2 }}</div>
                         <div class="d-body__table-summary">{{ item.summary3 }}</div>
@@ -76,12 +63,28 @@
                     <input 
                         class="d-body__input"
                         placeholder="Search..."
+                        v-model="filterById"
                     >
-                    <input class="d-body__input">
-                    <input class="d-body__input">
-                    <input class="d-body__input">
-                    <input class="d-body__input">
-                    <input class="d-body__input">
+                    <input 
+                        class="d-body__input"
+                        v-model="filterBySummary1"
+                    >
+                    <input 
+                        class="d-body__input"
+                        v-model="filterBySummary2"
+                    >
+                    <input 
+                        class="d-body__input"
+                        v-model="filterBySummary3"
+                    >
+                    <input 
+                        class="d-body__input"
+                        v-model="filterBySummary4"
+                    >
+                    <input 
+                        class="d-body__input"
+                        v-model="filterBySummary5"
+                    >
                 </div>
             </div>
         </div>
@@ -106,9 +109,36 @@ export default {
     },
     data() {
         return {
+            currentFilter: null,
+            filterById: null,
+            filterBySummary1: '',
+            filterBySummary2: '',
+            filterBySummary3: '',
+            filterBySummary4: '',
+            filterBySummary5: '',
+            filtersList: [
+                {
+                    title: 'Even rows of data',
+                    desc: 'Display rows 2,4,6 etc',
+                    icon: 'IconChartDonut',
+                    value: 'even',
+                },
+                {
+                    title: 'Odd rows of data',
+                    desc: 'Display rows 1,3,5 etc',
+                    icon: 'IconCheckOutline',
+                    value: 'odd',
+                },
+                {
+                    title: 'All data',
+                    desc: 'Display all data',
+                    icon: 'IconPrint',
+                    value: 'all',
+                },
+            ],
             list: [
                 {
-                    name: 'Data1',
+                    id: 1,
                     summary1: 186,
                     summary2: 186,
                     summary3: 92,
@@ -116,7 +146,7 @@ export default {
                     summary5: 1,
                 },
                 {
-                    name: 'Data2',
+                    id: 2,
                     summary1: 95,
                     summary2: 95,
                     summary3: 31,
@@ -124,7 +154,7 @@ export default {
                     summary5: 0,
                 },
                 {
-                    name: 'Data3',
+                    id: 3,
                     summary1: 329,
                     summary2: 329,
                     summary3: 256,
@@ -132,7 +162,7 @@ export default {
                     summary5: 4,
                 },
                 {
-                    name: 'Data4',
+                    id: 4,
                     summary1: 804,
                     summary2: 804,
                     summary3: 697,
@@ -140,16 +170,47 @@ export default {
                     summary5: 40,
                 },
                 {
-                    name: 'Data5',
+                    id: 5,
                     summary1: 176,
                     summary2: 149,
                     summary3: 2,
                     summary4: 99,
                     summary5: 111,
                 },
+                {
+                    id: 45,
+                    summary1: 804,
+                    summary2: 804,
+                    summary3: 697,
+                    summary4: 42,
+                    summary5: 40,
+                },
             ]
         }
-    }
+    },
+    mounted() {
+        this.currentFilter = this.filtersList[this.filtersList.length - 1].value
+    },
+    computed: {
+        listByCurrentFilter() {
+            if (!this.currentFilter || this.currentFilter === 'all') return this.list
+            return this.list.filter(element => this.checkNumber(element.id))
+        },
+        listByFilterId() {
+            if (this.filterById) return this.listByCurrentFilter.filter(element => String(element.id).toLowerCase().includes(String(this.filterById).toLowerCase()))
+            return this.listByCurrentFilter
+        }
+    },
+    methods: {
+        checkNumber(number) {
+            return this.currentFilter === 'even' 
+                ? number % 2 === 0
+                : number % 2 !== 0
+        },
+        setCurrentFilter(value) {
+            this.currentFilter = value
+        },
+    },
 }
 </script>
 
@@ -373,7 +434,8 @@ export default {
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            max-height: 256px;
+            height: 256px;
+            min-height: 256px;
 
             &::-webkit-scrollbar {
                 width: 0;

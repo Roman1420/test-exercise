@@ -2,9 +2,7 @@
     <div class="dashboard">
         <d-header/>
         <d-sub-header/>
-        <d-body>
-
-        </d-body>
+        <d-body/>
     </div>
 </template>
 
