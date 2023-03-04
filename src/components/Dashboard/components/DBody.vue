@@ -51,7 +51,7 @@
                         v-for="item in listByFilterId"
                         :key="item.id"
                     >
-                        <div class="d-body__table-name">{{ `Data${item.id}` }}</div>
+                        <div class="d-body__table-name">{{ item.name }}</div>
                         <div class="d-body__table-summary">{{ item.summary1 }}</div>
                         <div class="d-body__table-summary">{{ item.summary2 }}</div>
                         <div class="d-body__table-summary">{{ item.summary3 }}</div>
@@ -63,7 +63,7 @@
                     <input 
                         class="d-body__input"
                         placeholder="Search..."
-                        v-model="filterById"
+                        v-model="filterByName"
                     >
                     <input 
                         class="d-body__input"
@@ -110,7 +110,7 @@ export default {
     data() {
         return {
             currentFilter: null,
-            filterById: null,
+            filterByName: null,
             filterBySummary1: '',
             filterBySummary2: '',
             filterBySummary3: '',
@@ -139,6 +139,7 @@ export default {
             list: [
                 {
                     id: 1,
+                    name: 'Data1',
                     summary1: 186,
                     summary2: 186,
                     summary3: 92,
@@ -147,6 +148,7 @@ export default {
                 },
                 {
                     id: 2,
+                    name: 'Data2',
                     summary1: 95,
                     summary2: 95,
                     summary3: 31,
@@ -155,6 +157,7 @@ export default {
                 },
                 {
                     id: 3,
+                    name: 'Data3',
                     summary1: 329,
                     summary2: 329,
                     summary3: 256,
@@ -163,6 +166,7 @@ export default {
                 },
                 {
                     id: 4,
+                    name: 'Data4',
                     summary1: 804,
                     summary2: 804,
                     summary3: 697,
@@ -171,6 +175,7 @@ export default {
                 },
                 {
                     id: 5,
+                    name: 'Data5',
                     summary1: 176,
                     summary2: 149,
                     summary3: 2,
@@ -179,6 +184,7 @@ export default {
                 },
                 {
                     id: 45,
+                    name: 'Data45',
                     summary1: 804,
                     summary2: 804,
                     summary3: 697,
@@ -197,7 +203,7 @@ export default {
             return this.list.filter(element => this.checkNumber(element.id))
         },
         listByFilterId() {
-            if (this.filterById) return this.listByCurrentFilter.filter(element => String(element.id).toLowerCase().includes(String(this.filterById).toLowerCase()))
+            if (this.filterByName) return this.listByCurrentFilter.filter(element => String(element.name).toLowerCase().includes(String(this.filterByName).toLowerCase()))
             return this.listByCurrentFilter
         }
     },
